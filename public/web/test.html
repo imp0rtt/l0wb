@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Выгрузка данных</title>
+  <style>
+    body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    #orderForm {
+      text-align: center;
+    }
+
+    input[type="text"] {
+      padding: 10px;
+      margin: 5px;
+      width: 200px;
+    }
+
+    input[type="submit"] {
+      padding: 10px 20px;
+      background-color: #007BFF;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+
+    #data {
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+<form id="orderForm">
+  <div>
+    <input type="text" placeholder="order_uid" name="order_uid" id="inputId">
+  </div>
+  <input type="submit" value="Отправить">
+</form>
+<div id="data">
+
+</div>
+
+<script>
+  document.querySelector('#orderForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+
+    var orderUID = document.getElementById('inputId').value;
+    var xhr = new XMLHttpRequest();
+    console.log(orderUID)
+    xhr.open('POST', '/result', true);
+    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+    xhr.onreadystatechange = function () {
+      if (xhr.readyState === 4) {
+        if (xhr.status === 200) {
+          var dataDiv = document.getElementById('data');
+          var response = JSON.parse(xhr.responseText);
+
+          if (response.error) {
+            dataDiv.innerHTML = "Error: " + response.error;
+          } else {
+            dataDiv.innerHTML = "Result: " + response.result;
+          }
+        } else {
+          console.error('Произошла ошибка при отправке запроса.');
+        }
+      }
+    };
+
+    var formData = 'order_uid=' + encodeURIComponent(orderUID);
+    xhr.send(formData);
+  });
+</script>
+</body>
+</html>
